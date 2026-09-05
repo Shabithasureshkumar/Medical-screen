@@ -18,14 +18,14 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
   onShareWithNewDoctor
 }) => {
   return (
-    <section className="w-full flex flex-col gap-4">
+    <section className="w-full flex flex-col gap-3.5">
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-[24.37px] font-bold text-black tracking-[-0.35px] font-inter">
             Manage Medical Access
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-xl">
+          <p className="text-xs sm:text-[12.37px] text-[#424754] font-inter max-w-xl">
             Control who can view your health information. You can revoke or modify permissions at any time.
           </p>
         </div>
@@ -33,7 +33,7 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
         <button
           type="button"
           onClick={onShareWithNewDoctor}
-          className="h-11 sm:h-12 px-6 rounded-full bg-gradient-to-r from-[#9E33FD] to-[#5C24FF] hover:opacity-95 text-white text-sm font-semibold shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 self-start sm:self-auto"
+          className="w-full sm:w-[209px] h-[52px] sm:h-[58px] rounded-[50px] bg-gradient-to-b from-[#9E33FD] to-[#5C24FF] hover:opacity-95 text-white text-[16px] font-semibold shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
         >
           <UserPlus className="w-4 h-4" />
           <span>Share with New Doctor</span>
@@ -41,15 +41,15 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
       </div>
 
       {/* Doctor Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] w-full">
         {doctors.map((doctor) => (
           <div
             key={doctor.id}
-            className="rounded-[18px] bg-white border border-slate-200/80 p-4 sm:p-5 shadow-xs flex flex-col gap-4"
+            className="w-full rounded-[9.84px] bg-white border border-[#D4D2D7]/80 p-5 shadow-xs flex flex-col justify-between gap-3.5"
           >
-            {/* Doctor Info Top */}
+            {/* Top Doctor Row */}
             <div className="flex items-start gap-3.5">
-              <div className="w-20 sm:w-[90px] h-20 sm:h-[90px] rounded-[18px] overflow-hidden bg-purple-50 ring-1 ring-purple-100 shrink-0">
+              <div className="w-[93px] h-[93px] rounded-[18px] overflow-hidden bg-purple-50 ring-1 ring-white/50 shrink-0">
                 <img
                   src={doctor.avatarUrl}
                   alt={doctor.name}
@@ -58,15 +58,15 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
               </div>
 
               <div className="flex-1 flex flex-col gap-1 min-w-0">
-                <div className="flex flex-col items-start gap-1">
-                  <h3 className="text-base sm:text-[17px] font-semibold text-slate-900 leading-tight">
+                <div className="flex flex-col items-start gap-0.5">
+                  <h3 className="text-[17.35px] font-semibold text-[#1D1A23] leading-snug tracking-[-0.20px] font-inter">
                     {doctor.name}
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full bg-[#00668A]/10 text-[#00668A] text-[9.5px] font-bold tracking-wider uppercase">
+                  <span className="px-2 py-0.5 rounded-full bg-[hsla(199,98%,62%,0.20)] text-[#00668A] text-[8.61px] font-bold tracking-[0.86px] uppercase font-inter">
                     {doctor.role}
                   </span>
                 </div>
-                <div className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                <div className="text-[10.56px] text-[#475569] font-medium font-inter">
                   {doctor.specialty}
                 </div>
                 <div className="flex items-center gap-1 mt-0.5 text-xs">
@@ -75,24 +75,24 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
                       <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="font-bold text-slate-800 ml-1">{doctor.rating}</span>
-                  <span className="text-slate-400 text-[10.5px]">({doctor.reviewCount} reviews)</span>
+                  <span className="font-bold text-[#1E293B] text-[10.56px] ml-1 font-inter">{doctor.rating}</span>
+                  <span className="text-[#64748B] text-[10.56px] font-inter">({doctor.reviewCount} reviews)</span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons on Right */}
               <div className="flex flex-col gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => onRevokeAccess?.(doctor.id)}
-                  className="px-3 py-1.5 rounded-[10px] border border-red-200 text-[#BA1A1A] hover:bg-red-50 text-[11px] font-semibold transition-colors cursor-pointer"
+                  className="w-[92px] h-[44px] rounded-[10.33px] border border-[hsla(0,75%,42%,0.20)] text-[#BA1A1A] hover:bg-red-50 text-[10.33px] font-semibold transition-colors cursor-pointer flex items-center justify-center font-inter"
                 >
                   Revoke Access
                 </button>
                 <button
                   type="button"
                   onClick={() => onViewAndEdit?.(doctor.id)}
-                  className="px-3 py-1.5 rounded-[10px] bg-gradient-to-b from-[#A075FA] to-[#5C24FF] hover:opacity-95 text-white text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
+                  className="w-[92px] h-[44px] rounded-[10.33px] bg-gradient-to-b from-[#A075FA] to-[#5C24FF] hover:opacity-95 text-white text-[10.33px] font-semibold transition-all shadow-xs cursor-pointer flex items-center justify-center font-inter"
                 >
                   View & Edit
                 </button>
@@ -100,14 +100,14 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
             </div>
 
             {/* Permissions Box */}
-            <div className="rounded-[13px] bg-purple-500/[0.04] p-3 sm:p-4 border border-purple-100/60 flex flex-col gap-2.5">
-              <h4 className="text-[10px] font-bold text-slate-500 tracking-wider uppercase">
-                Permissions
+            <div className="rounded-[13.44px] bg-[hsla(262,90%,46%,0.05)] p-4 border border-purple-100/50 flex flex-col gap-2.5">
+              <h4 className="text-[10.08px] font-bold text-[#424754] tracking-[1.01px] uppercase font-inter">
+                PERMISSIONS
               </h4>
 
-              {/* Permission 1: Medical Records */}
+              {/* Permission 1 */}
               <div className="flex items-center justify-between text-xs py-0.5">
-                <div className="flex items-center gap-2 text-slate-800 font-medium">
+                <div className="flex items-center gap-2 text-[#191C1E] font-medium text-[11.76px] font-inter">
                   <FileText className="w-3.5 h-3.5 text-purple-600" />
                   <span>Medical Records</span>
                 </div>
@@ -128,9 +128,9 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
                 </button>
               </div>
 
-              {/* Permission 2: Laboratory Results */}
+              {/* Permission 2 */}
               <div className="flex items-center justify-between text-xs py-0.5">
-                <div className="flex items-center gap-2 text-slate-800 font-medium">
+                <div className="flex items-center gap-2 text-[#191C1E] font-medium text-[11.76px] font-inter">
                   <FlaskConical className="w-3.5 h-3.5 text-purple-600" />
                   <span>Laboratory Results</span>
                 </div>
@@ -151,9 +151,9 @@ export const ManageMedicalAccess: React.FC<ManageMedicalAccessProps> = ({
                 </button>
               </div>
 
-              {/* Permission 3: Prescriptions & Medications */}
+              {/* Permission 3 */}
               <div className="flex items-center justify-between text-xs py-0.5">
-                <div className="flex items-center gap-2 text-slate-800 font-medium">
+                <div className="flex items-center gap-2 text-[#191C1E] font-medium text-[11.76px] font-inter">
                   <Pill className="w-3.5 h-3.5 text-purple-600" />
                   <span>Prescriptions & Medications</span>
                 </div>

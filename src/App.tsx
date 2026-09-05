@@ -149,10 +149,10 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* Top Header Navigation */}
+      {/* Top Header Navigation (1380px) */}
       <TopNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Critical Alert Result Banner */}
+      {/* Critical Alert Result Banner (1369px) */}
       <CriticalResultBanner
         onViewResult={() => {
           showToast('Viewing critical lab result for potassium levels');
@@ -160,31 +160,35 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Welcome Banner & Switcher */}
+      {/* Welcome Banner & Switcher (1358px) */}
       <WelcomeSection onOpenInsight={handleOpenModal} />
 
-      {/* Main Content Layout (Desktop 2-column, Mobile 1-column) */}
-      <main className="w-full max-w-[1380px] mx-auto px-3 sm:px-6 lg:px-8 flex-1">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column (8 of 12 columns on desktop) */}
-          <div className="lg:col-span-8 flex flex-col gap-6 w-full">
-            {/* Action Row & Julian Casablancas Hero Card */}
-            <PatientProfileCard
-              patient={initialPatient}
-              onUploadFile={() => showToast('Opening file upload dialog...')}
-              onDownloadRecords={() => showToast('Downloading health records archive...')}
-              onAccessRequests={() => showToast('12 access requests pending review')}
-              onNewAppointment={() => showToast('Scheduling a new appointment...')}
-              onViewAppointments={() => showToast('Displaying patient appointments schedule')}
-            />
+      {/* Main Content Area (1369px max width matching Figma Frame 2147226973) */}
+      <main className="w-full max-w-[1369px] mx-auto px-3 sm:px-4 lg:px-0 flex flex-col gap-[29px] flex-1">
+        {/* ROW 1: Left = Julian Casablancas (618px), Right = 4 Overview Cards (737px) */}
+        <div className="w-full flex flex-col lg:flex-row items-start justify-between gap-[13px]">
+          {/* Left 618px: Quick actions + Julian Card */}
+          <PatientProfileCard
+            patient={initialPatient}
+            onUploadFile={() => showToast('Opening file upload dialog...')}
+            onDownloadRecords={() => showToast('Downloading health records archive...')}
+            onAccessRequests={() => showToast('12 access requests pending review')}
+            onNewAppointment={() => showToast('Scheduling a new appointment...')}
+            onViewAppointments={() => showToast('Displaying patient appointments schedule')}
+          />
 
-            {/* Health Overview Metric Cards (2x2 Grid) */}
-            <HealthOverviewCards
-              metrics={healthMetrics}
-              onViewMetric={(id) => showToast(`Opening metric category ${id}`)}
-            />
+          {/* Right 737px: 2x2 Overview Metrics Cards */}
+          <HealthOverviewCards
+            metrics={healthMetrics}
+            onViewMetric={(id) => showToast(`Opening metric category ${id}`)}
+          />
+        </div>
 
-            {/* Manage Medical Access Section */}
+        {/* ROW 2: Left = Manage Medical Access + Audit Trail (909px), Right = AI Pattern Detection + Journey Timeline (452px) */}
+        <div className="w-full flex flex-col lg:flex-row items-start justify-between gap-[10px]">
+          {/* Left Column (909px): Manage Medical Access + Access Audit Trail */}
+          <div className="w-full lg:w-[909px] flex flex-col gap-6 shrink-0">
+            {/* Manage Medical Access */}
             <ManageMedicalAccess
               doctors={doctors}
               onTogglePermission={handleTogglePermission}
@@ -193,15 +197,15 @@ export const App: React.FC = () => {
               onShareWithNewDoctor={() => showToast('Inviting new healthcare provider...')}
             />
 
-            {/* Access Audit Trail Section */}
+            {/* Access Audit Trail Table */}
             <AccessAuditTrail
               logs={initialAuditLogs}
               onFullHistory={() => showToast('Loading full encrypted audit log...')}
             />
           </div>
 
-          {/* Right Column (4 of 12 columns on desktop) */}
-          <div className="lg:col-span-4 flex flex-col gap-5 w-full lg:border-l lg:border-slate-200/80 lg:pl-6">
+          {/* Right Column (452px): AI Pattern Detection + Filters + Journey Timeline */}
+          <div className="w-full lg:w-[452px] flex flex-col gap-5 shrink-0 lg:border-l lg:border-slate-300/60 lg:pl-4">
             {/* AI Pattern Detection Highlight Card */}
             <AiPatternCard onViewInsight={handleOpenModal} />
 
@@ -220,7 +224,7 @@ export const App: React.FC = () => {
         </div>
       </main>
 
-      {/* AI Insight Summary Modal (Figma Replica) */}
+      {/* AI Insight Summary Modal (Exact Figma Replica) */}
       <AiInsightModal
         isOpen={isInsightModalOpen}
         onClose={handleCloseModal}

@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, AlertTriangle } from 'lucide-react';
 
 interface CriticalResultBannerProps {
   onViewResult?: () => void;
@@ -17,8 +17,9 @@ export const CriticalResultBanner: React.FC<CriticalResultBannerProps> = ({ onVi
         className="w-full min-h-[56px] rounded-xl bg-[#F8D7DA]/90 border border-red-200/90 px-4 sm:px-6 py-2.5 sm:py-3 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-[#6B0505]"
       >
         <div className="flex items-center gap-2 flex-1">
-          <p className="text-xs sm:text-sm md:text-[16px] font-medium leading-normal text-[#6B0505]">
-            <span className="mr-1.5 select-none text-red-600">🔴</span>
+          <AlertTriangle className="w-5 h-5 text-[#6B0505] shrink-0 fill-[#6B0505]/10" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#E53E3E] shrink-0 inline-block mr-1"></span>
+          <p className="text-xs sm:text-sm md:text-[15.5px] font-medium leading-normal text-[#6B0505]">
             <strong>Critical Result:</strong> Your potassium level was 6.1 mEq/L on May 26 and requires immediate attention. Your care team has been notified.
           </p>
         </div>
