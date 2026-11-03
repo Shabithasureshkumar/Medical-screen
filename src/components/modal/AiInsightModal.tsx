@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   X,
   Sparkles,
@@ -135,6 +135,23 @@ export const AiInsightModal: React.FC<AiInsightModalProps> = ({
 
         {/* Scrollable Content Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 no-scrollbar bg-white">
+          {/* Critical Potassium Result Callout Banner */}
+          <div
+            data-testid="modal-critical-potassium-alert"
+            className="rounded-[8px] border border-red-200 bg-[#F8D7DA]/60 p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[#6B0505]"
+          >
+            <div className="flex items-start gap-2.5">
+              <FlaskConical className="w-4 h-4 text-[#BA1A1A] shrink-0 mt-0.5" />
+              <div className="text-xs sm:text-sm leading-snug">
+                <strong className="font-bold">Critical Lab Result (May 26, 2026):</strong> Serum Potassium measured at{' '}
+                <strong className="font-bold underline">6.1 mEq/L</strong> (Reference: 3.5–5.1 mEq/L). Care team notified for electrolyte &amp; Lisinopril review.
+              </div>
+            </div>
+            <span className="self-start sm:self-center px-2.5 py-0.5 rounded-full bg-[#6B0505] text-white text-[11px] font-bold uppercase shrink-0">
+              High Priority
+            </span>
+          </div>
+
           {/* 1. OVERALL HEALTH TREND Card */}
           <div className="rounded-[8px] border border-[#C3C6D6] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs bg-white">
             <div className="flex flex-col gap-1">

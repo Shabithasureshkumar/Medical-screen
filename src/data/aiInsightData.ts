@@ -1,4 +1,4 @@
-﻿import {
+import {
   OverallHealthTrend,
   RecordsSummary,
   InsightCardData,
@@ -48,8 +48,8 @@ export const initialInsightCards: InsightCardData[] = [
       label: 'Attention',
       variant: 'attention'
     },
-    primaryValue: 'LDL 142 mg/dL',
-    targetSubtext: 'Above target range (<100)'
+    primaryValue: 'K+ 6.1 mEq/L • LDL 135 mg/dL',
+    targetSubtext: 'Potassium >5.1 mEq/L (Critical) & LDL >100 mg/dL'
   },
   {
     id: 'card-3',
@@ -70,8 +70,8 @@ export const initialInsightCards: InsightCardData[] = [
       label: 'Reviewed',
       variant: 'reviewed'
     },
-    primaryValue: 'No changes in MRI',
-    dateSubtext: 'Last: Oct 12, 2024'
+    primaryValue: 'No acute changes in MRI',
+    dateSubtext: 'Last: May 19, 2026'
   }
 ];
 
@@ -129,17 +129,17 @@ export const riskCategories: RiskCategory[] = [
 export const initialRecommendations: AiRecommendationItem[] = [
   {
     id: 'rec-1',
-    text: 'Continue monitoring blood pressure weekly.',
+    text: 'Urgent: Repeat serum potassium panel to confirm May 26 critical reading (6.1 mEq/L) and review ACE-inhibitor (Lisinopril) dosing.',
     checked: false
   },
   {
     id: 'rec-2',
-    text: 'Maintain medication adherence strictly.',
+    text: 'Adopt soluble-fiber dietary adjustments to bring LDL cholesterol (135 mg/dL) below 100 mg/dL.',
     checked: false
   },
   {
     id: 'rec-3',
-    text: 'Schedule follow-up consultation within 30 days.',
+    text: 'Continue monitoring blood pressure weekly (currently improved at 118/78 mmHg).',
     checked: false
   }
 ];

@@ -1,4 +1,11 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
+
+/* Register the `xs` breakpoint. Without this @theme entry Tailwind v4 emits no
+   rule for `xs:*` utilities, so every `xs:` class in the app was dead CSS and
+   phone sizing jumped straight from the base size to `sm:`. */
+@theme {
+  --breakpoint-xs: 475px;
+}
 
 @layer base {
   :root {
@@ -10,7 +17,6 @@
 
   html, body {
     max-width: 100vw;
-    overflow-x: hidden;
   }
 
   body {
@@ -60,4 +66,152 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Guaranteed Figma Fixed Desktop Dimensions (>= 1380px) */
+@media (min-width: 1380px) {
+  .desktop-patient-fixed {
+    flex: 618 1 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+  .desktop-overview-fixed {
+    flex: 737 1 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+  .desktop-row2-left-fixed {
+    flex: 909 1 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+  .desktop-row2-right-fixed {
+    flex: 452 1 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (min-width: 1380px) and (max-width: 1439px) {
+  .desktop-main-padding {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .desktop-main-padding {
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+  }
+}
+
+/* Lab & Imaging Center Strict Figma Layout Architecture (>= 1380px Desktop) */
+@media (min-width: 1380px) {
+  .imaging-analytics-row {
+    display: grid !important;
+    grid-template-columns: 47fr 24fr 29fr !important;
+    align-items: stretch !important;
+  }
+  .imaging-analytics-row > div:nth-child(1) {
+    grid-column: span 1 / span 1 !important;
+  }
+  .imaging-analytics-row > div:nth-child(2) {
+    grid-column: span 1 / span 1 !important;
+  }
+  .imaging-analytics-row > div:nth-child(3) {
+    grid-column: span 1 / span 1 !important;
+  }
+
+  .imaging-insight-row {
+    display: grid !important;
+    grid-template-columns: 49fr 51fr !important;
+    align-items: stretch !important;
+  }
+
+  .imaging-records-row {
+    display: grid !important;
+    grid-template-columns: 32fr 68fr !important;
+    align-items: stretch !important;
+  }
+}
+
+/* Fluid clamp() scale.
+   Every screen sizes its shell, headings and profile switcher from these, so
+   type and spacing scale continuously between 375px and 1380px instead of
+   stepping at breakpoints. Each max value matches the previous `lg:` /
+   `min-[1380px]:` value, so the desktop Figma rendering is unchanged. */
+.fluid-page-x {
+  padding-left: clamp(0.875rem, 2.25vw, 2rem);
+  padding-right: clamp(0.875rem, 2.25vw, 2rem);
+}
+.fluid-page-y {
+  padding-top: clamp(1rem, 1.7vw, 1.5rem);
+  padding-bottom: clamp(1rem, 1.7vw, 1.5rem);
+}
+.fluid-page-gap {
+  gap: clamp(1.5rem, 2.25vw, 2rem);
+}
+.fluid-section-gap {
+  gap: clamp(1.25rem, 1.7vw, 1.5rem);
+}
+.fluid-h1 {
+  font-size: clamp(1.25rem, 2.9vw, 2.5rem);
+  line-height: 1.15;
+}
+.fluid-h1-lg {
+  font-size: clamp(1.5rem, 2.9vw, 2.5rem);
+  line-height: 1.15;
+}
+.fluid-h2 {
+  font-size: clamp(1.0625rem, 1.4vw, 1.375rem);
+  line-height: 1.25;
+}
+.fluid-subtitle {
+  font-size: clamp(0.75rem, 1.1vw, 0.9375rem);
+}
+.fluid-card-p {
+  padding: clamp(1rem, 1.6vw, 1.5rem);
+}
+
+/* Patient profile switcher chip, shared by every page header */
+.fluid-profile-card {
+  width: clamp(142px, 18.8vw, 260px);
+  height: clamp(50px, 5.95vw, 82px);
+  border-radius: clamp(16px, 1.75vw, 24px);
+  padding: clamp(8px, 0.9vw, 12px);
+}
+.fluid-profile-avatar {
+  width: clamp(32px, 3.8vw, 52px);
+  height: clamp(32px, 3.8vw, 52px);
+  border-radius: clamp(8px, 1vw, 12px);
+}
+.fluid-profile-name {
+  font-size: clamp(11px, 1.1vw, 15px);
+}
+.fluid-profile-role {
+  font-size: clamp(9px, 0.9vw, 12px);
+}
+
+/* Pill action buttons in page headers */
+.fluid-action-btn {
+  height: clamp(38px, 3.5vw, 48px);
+  padding-left: clamp(1rem, 1.6vw, 1.5rem);
+  padding-right: clamp(1rem, 1.6vw, 1.5rem);
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+}
+
+/* Compact pill button variant + breadcrumb link, shared by page headers */
+.fluid-action-btn-sm {
+  height: clamp(38px, 3.2vw, 44px);
+  padding-left: clamp(1rem, 1.5vw, 1.5rem);
+  padding-right: clamp(1rem, 1.5vw, 1.5rem);
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+}
+.fluid-breadcrumb {
+  font-size: clamp(0.75rem, 0.95vw, 0.875rem);
 }

@@ -22,3 +22,6 @@ dist-ssr
 screenshots/
 analysis/
 .figma/
+
+.data/
+.vercel

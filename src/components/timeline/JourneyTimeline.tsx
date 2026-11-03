@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { TimelineItem } from '../../types/medical';
 import { FlaskConical, Stethoscope, Pill, HeartPulse } from 'lucide-react';
 
@@ -23,15 +23,22 @@ export const JourneyTimeline: React.FC<JourneyTimelineProps> = ({
   return (
     <div 
       id="health-timeline" 
-      className={`w-full flex flex-col gap-6 transition-all duration-500 ${
+      className={`w-full flex flex-col gap-6 transition-all duration-500 relative pl-3 sm:pl-3.5 ${
         highlighted ? 'ring-2 ring-purple-500 rounded-2xl p-2 bg-purple-50/30' : ''
       }`}
     >
+      {/* Continuous Vertical Timeline Spine (Figma Source of Truth) */}
+      <div 
+        aria-hidden="true" 
+        className="absolute left-0.5 sm:left-1 top-2 bottom-3 w-[2px] bg-gradient-to-b from-[#8B5CF6] via-[#A855F7] to-[#C084FC]/60 rounded-full pointer-events-none" 
+      />
+
       {Object.entries(groups).map(([monthGroup, groupItems]) => (
         <div key={monthGroup} className="flex flex-col gap-3">
           {/* Phase Header */}
-          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1">
-            {monthGroup}
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] -ml-[13px] sm:-ml-[15px] ring-2 ring-white" />
+            <span>{monthGroup}</span>
           </div>
 
           {/* Group Items */}

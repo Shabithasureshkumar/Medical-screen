@@ -1,4 +1,4 @@
-﻿export interface PatientProfile {
+export interface PatientProfile {
   id: string;
   name: string;
   age: string;
@@ -8,6 +8,7 @@
   weight: number;
   bmi: number;
   avatarUrl: string;
+  relationship?: string;
 }
 
 export interface DoctorAccess {
