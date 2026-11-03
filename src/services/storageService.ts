@@ -65,6 +65,13 @@ export function loadPatientPortalState(
 let apiAvailable: boolean | null = null;
 let apiProbe: Promise<unknown> | null = null;
 
+// The /api routes come from the Vite dev-server middleware in vite.config.ts,
+// so a production bundle never has them to talk to. Settle the flag up front
+// there rather than letting the first mount spend a 404 discovering it.
+if (!import.meta.env.DEV) {
+  apiAvailable = false;
+}
+
 export function savePatientPortalState(
   patientId: string,
   state: PersistedPortalState
