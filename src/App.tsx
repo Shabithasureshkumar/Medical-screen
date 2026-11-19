@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { TopNavigation } from './components/layout/TopNavigation';
 import { CriticalResultBanner } from './components/layout/CriticalResultBanner';
 import { WelcomeSection } from './components/dashboard/WelcomeSection';
@@ -13,6 +13,7 @@ import { AiInsightModal } from './components/modal/AiInsightModal';
 import { LabImagingPage } from './components/imaging/LabImagingPage';
 import { LabTestsPage } from './components/lab-tests/LabTestsPage';
 import { MedicalRecordsPage } from './components/medical-records/MedicalRecordsPage';
+
 import { PrescriptionPage } from './components/prescription/PrescriptionPage';
 import { UploadMedicalDocumentsPage } from './components/upload/UploadMedicalDocumentsPage';
 import { AccessHistoryPage } from './components/access/AccessHistoryPage';
@@ -41,6 +42,14 @@ import {
 } from './data/medicalRecordsData';
 
 import { TimelineFilter, TimelineItem } from './types/medical';
+
+// PDF.js and the report composer are only needed on the Report PDF viewer, so
+// they load on demand instead of weighing down every other page.
+const ReportPdfViewPage = lazy(() =>
+  import('./components/report-viewer/ReportPdfViewPage').then((mod) => ({
+    default: mod.ReportPdfViewPage
+  }))
+);
 import {
   loadActivePatientId,
   saveActivePatientId,
@@ -49,7 +58,16 @@ import {
   fetchPatientPortalStateFromApi
 } from './services/storageService';
 
-export type AppPage = 'dashboard' | 'lab-tests' | 'imaging' | 'medical-records' | 'prescription' | 'upload' | 'access-history' | 'access-request';
+export type AppPage =
+  | 'dashboard'
+  | 'lab-tests'
+  | 'imaging'
+  | 'medical-records'
+  | 'report-view'
+  | 'prescription'
+  | 'upload'
+  | 'access-history'
+  | 'access-request';
 
 export const App: React.FC = () => {
   // Check if URL has ?modal=true for test capture
@@ -65,6 +83,7 @@ export const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<AppPage>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      if (params.get('page') === 'report-view' && params.get('record')) return 'report-view';
       if (params.get('page') === 'access-request') return 'access-request';
       if (params.get('page') === 'access-history') return 'access-history';
       if (params.get('page') === 'upload') return 'upload';
@@ -75,6 +94,14 @@ export const App: React.FC = () => {
       return 'dashboard';
     }
     return 'dashboard';
+  });
+
+  // Record currently open in the Report PDF viewer (?page=report-view&record=<id>)
+  const [activeRecordId, setActiveRecordId] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search).get('record');
+    }
+    return null;
   });
 
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>('all');
@@ -134,6 +161,15 @@ export const App: React.FC = () => {
     });
   }, [activePatient.id, doctors, auditLogs, recommendations, medicalRecords, timelineItems]);
 
+  // Record backing the Report PDF viewer. A stale/unknown ?record= id falls
+  // back to the Medical Records listing instead of rendering an empty viewer.
+  const activeReportRecord = activeRecordId
+    ? medicalRecords.find((rec) => rec.id === activeRecordId) || null
+    : null;
+
+  const effectivePage: AppPage =
+    currentPage === 'report-view' && !activeReportRecord ? 'medical-records' : currentPage;
+
   // Derive TopNavigation active tab from currentPage so navigation stays consistent
   const derivedActiveTab =
     currentPage === 'dashboard'
@@ -158,7 +194,11 @@ export const App: React.FC = () => {
       const params = new URLSearchParams(window.location.search);
       setIsInsightModalOpen(params.get('modal') === 'true');
       const pageParam = params.get('page');
-      if (pageParam === 'access-request') {
+      const recordParam = params.get('record');
+      setActiveRecordId(recordParam);
+      if (pageParam === 'report-view' && recordParam) {
+        setCurrentPage('report-view');
+      } else if (pageParam === 'access-request') {
         setCurrentPage('access-request');
       } else if (pageParam === 'access-history') {
         setCurrentPage('access-history');
@@ -184,6 +224,8 @@ export const App: React.FC = () => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const url = new URL(window.location.href);
+    url.searchParams.delete('record');
+    setActiveRecordId(null);
     if (page === 'access-request') {
       url.searchParams.set('page', 'access-request');
       url.searchParams.delete('study');
@@ -218,6 +260,24 @@ export const App: React.FC = () => {
       url.searchParams.delete('signal');
     }
     window.history.pushState({}, '', url.toString());
+  };
+
+  const handleOpenReportDocument = (recordId: string) => {
+    setActiveRecordId(recordId);
+    setCurrentPage('report-view');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', 'report-view');
+    url.searchParams.set('record', recordId);
+    url.searchParams.delete('study');
+    url.searchParams.delete('signal');
+    window.history.pushState({}, '', url.toString());
+  };
+
+  const handleRecordUpdated = (recordId: string, patch: Partial<MedicalRecordItem>) => {
+    setMedicalRecords((prev) =>
+      prev.map((rec) => (rec.id === recordId ? { ...rec, ...patch } : rec))
+    );
   };
 
   const handleTabChange = (tab: string) => {
@@ -394,7 +454,7 @@ export const App: React.FC = () => {
         patientName={activePatient.name}
       />
 
-      {currentPage === 'upload' ? (
+      {effectivePage === 'upload' ? (
         <UploadMedicalDocumentsPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onCancel={() => handleNavigate('dashboard')}
@@ -402,7 +462,7 @@ export const App: React.FC = () => {
           onNavigateToTimeline={handleViewTimelineFromModal}
           onDocumentUploaded={handleDocumentUploaded}
         />
-      ) : currentPage === 'lab-tests' ? (
+      ) : effectivePage === 'lab-tests' ? (
         <LabTestsPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onNavigateToUpload={() => handleNavigate('upload')}
@@ -411,30 +471,47 @@ export const App: React.FC = () => {
           patientName={activePatient.name}
           patientId={activePatient.id}
         />
-      ) : currentPage === 'imaging' ? (
+      ) : effectivePage === 'imaging' ? (
         <LabImagingPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onOpenAiInsight={handleOpenModal}
           onNavigateToUpload={() => handleNavigate('upload')}
         />
-      ) : currentPage === 'medical-records' ? (
+      ) : effectivePage === 'medical-records' ? (
         <MedicalRecordsPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onNavigateToUpload={() => handleNavigate('upload')}
           externalRecords={medicalRecords}
+          onViewRecord={(rec) => handleOpenReportDocument(rec.id)}
         />
-      ) : currentPage === 'prescription' ? (
+      ) : effectivePage === 'report-view' && activeReportRecord ? (
+        <Suspense
+          fallback={
+            <div className="w-full flex-1 flex items-center justify-center py-24 text-sm font-medium text-slate-500">
+              Loading document viewer…
+            </div>
+          }
+        >
+          <ReportPdfViewPage
+            record={activeReportRecord}
+            patient={activePatient}
+            onClose={() => handleNavigate('medical-records')}
+            onSwitchProfile={handleSwitchPatientProfile}
+            onRecordUpdated={handleRecordUpdated}
+          />
+        </Suspense>
+      ) : effectivePage === 'prescription' ? (
         <PrescriptionPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onOpenAiInsight={handleOpenModal}
           onNavigateToUpload={() => handleNavigate('upload')}
         />
-      ) : currentPage === 'access-history' ? (
+      ) : effectivePage === 'access-history' ? (
         <AccessHistoryPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onNavigateToRecords={() => handleNavigate('medical-records')}
         />
-      ) : currentPage === 'access-request' ? (
+      ) : effectivePage === 'access-request' ? (
         <AccessRequestPage
           onBackToDashboard={() => handleNavigate('dashboard')}
           onNavigateToRecords={() => handleNavigate('medical-records')}

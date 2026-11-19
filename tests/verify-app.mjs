@@ -122,4 +122,42 @@ test('Lab Tests Full-Width Layout: removes narrow max-w-[1380px] mx-auto and max
   assert.ok(labPageCode.includes('gap-[clamp(0.75rem,1.5vw,1.5rem)]'), 'Must use fluid clamp() grid gap');
 });
 
+// 11. Report PDF Viewer: real PDF.js rendering wired into the Medical Records listing
+test('Report PDF Viewer: renders real PDF pages via PDF.js with working zoom, rotation, paging, download, print and close', () => {
+  const viewerCode = read('src/components/report-viewer/PdfCanvasViewer.tsx');
+  assert.ok(viewerCode.includes("from '../../services/pdfjs'"), 'Viewer must render through the shared PDF.js setup');
+  assert.ok(viewerCode.includes('pdfjsLib.getDocument'), 'Viewer must load documents with PDF.js, not a static placeholder');
+  assert.ok(viewerCode.includes('bytes.slice()'), 'Viewer must hand PDF.js a private copy so the buffer is not detached');
+  assert.ok(viewerCode.includes("effectiveStatus === 'error'"), 'Viewer must expose a professional error state');
+  assert.ok(viewerCode.includes("effectiveStatus === 'loading'"), 'Viewer must expose a loading state');
+
+  const toolbarCode = read('src/components/report-viewer/PdfToolbar.tsx');
+  assert.ok(toolbarCode.includes('aria-label="Zoom in"') && toolbarCode.includes('aria-label="Zoom out"'), 'Toolbar must expose zoom controls');
+  assert.ok(toolbarCode.includes('Page {numPages === 0'), 'Toolbar must show a live page indicator');
+  assert.ok(toolbarCode.includes('Rotate document 90 degrees clockwise'), 'Toolbar must expose rotation');
+  assert.ok(toolbarCode.includes('fitMode'), 'Toolbar must expose a fit-to-width / fit-to-page control');
+
+  const pageCode = read('src/components/report-viewer/ReportPdfViewPage.tsx');
+  assert.ok(pageCode.includes('resolveReportDocument(record, patient)'), 'Page must resolve the selected record dynamically, never a static sample');
+  assert.ok(pageCode.includes('registerUploadedDocument'), 'Page must support uploading a new PDF');
+  assert.ok(pageCode.includes('downloadPdf(') && pageCode.includes('printPdf('), 'Page must support download and print of the exact bytes');
+  assert.ok(!pageCode.includes('David Brock'), 'Patient details must come from the active profile, not hardcoded strings');
+
+  const serviceCode = read('src/services/reportDocumentService.ts');
+  assert.ok(serviceCode.includes("from 'jspdf'"), 'Service must compose real PDF bytes');
+  assert.ok(!serviceCode.includes('David Brock'), 'Generated documents must be driven by record/patient data');
+
+  const appCode = read('src/App.tsx');
+  assert.ok(appCode.includes("'report-view'"), 'App must route to the Report PDF viewer');
+  assert.ok(appCode.includes('handleOpenReportDocument'), 'App must open the viewer for a selected record');
+  assert.ok(appCode.includes("url.searchParams.set('record', recordId)"), 'Viewer route must carry the selected record id');
+  assert.ok(appCode.includes('lazy(() =>'), 'PDF stack must stay out of the main bundle');
+
+  const recordsPageCode = read('src/components/medical-records/MedicalRecordsPage.tsx');
+  assert.ok(recordsPageCode.includes('onViewRecord'), 'Medical Records page must forward record clicks to the viewer');
+
+  const tableCode = read('src/components/medical-records/MedicalRecordsTable.tsx');
+  assert.ok(tableCode.includes('Open PDF preview for'), 'Record rows and cards must be clickable');
+});
+
 console.log(`\nAll ${passed} verification test suites passed successfully!`);

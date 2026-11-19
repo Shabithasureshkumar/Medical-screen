@@ -11,7 +11,9 @@
     "test": "node tests/verify-app.mjs"
   },
   "dependencies": {
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.38.0",
+    "pdfjs-dist": "^6.5.438",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

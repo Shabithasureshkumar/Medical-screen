@@ -1,6 +1,11 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { createRequire } from 'node:module'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+
+const requireFromHere = createRequire(import.meta.url)
 
 interface MinimalIncomingMessage {
   url?: string
@@ -25,6 +30,61 @@ function getQueryParam(rawUrl: string, key: string): string | null {
 function getPathname(rawUrl: string): string {
   const qIndex = rawUrl.indexOf('?')
   return qIndex === -1 ? rawUrl : rawUrl.slice(0, qIndex)
+}
+
+/**
+ * PDF.js needs the standard-14 font data (Helvetica/Times/Courier) to render
+ * documents that do not embed their own fonts. Rather than committing ~800 KB
+ * of binaries into public/, serve them from node_modules in dev and emit them
+ * as build assets under the same /pdfjs/standard_fonts/ path.
+ */
+function pdfjsStandardFontsPlugin(): Plugin {
+  const PUBLIC_BASE = '/pdfjs/standard_fonts/'
+  let fontsDir = ''
+  let isBuild = false
+
+  try {
+    fontsDir = path.join(
+      path.dirname(requireFromHere.resolve('pdfjs-dist/package.json')),
+      'standard_fonts'
+    )
+  } catch {
+    fontsDir = ''
+  }
+
+  return {
+    name: 'pdfjs-standard-fonts',
+    configResolved(config) {
+      isBuild = config.command === 'build'
+    },
+    buildStart() {
+      if (!isBuild || !fontsDir || !fs.existsSync(fontsDir)) return
+      for (const name of fs.readdirSync(fontsDir)) {
+        const full = path.join(fontsDir, name)
+        if (!fs.statSync(full).isFile()) continue
+        this.emitFile({
+          type: 'asset',
+          fileName: `pdfjs/standard_fonts/${name}`,
+          source: fs.readFileSync(full)
+        })
+      }
+    },
+    configureServer(server) {
+      server.middlewares.use((rawReq, res, next) => {
+        const req = rawReq as unknown as MinimalIncomingMessage
+        const rawUrl = req.url || ''
+        if (!rawUrl.startsWith(PUBLIC_BASE) || !fontsDir) return next()
+
+        const fileName = path.basename(getPathname(rawUrl))
+        const filePath = path.join(fontsDir, fileName)
+        if (!filePath.startsWith(fontsDir) || !fs.existsSync(filePath)) return next()
+
+        res.setHeader('Content-Type', 'application/octet-stream')
+        res.setHeader('Cache-Control', 'public, max-age=86400')
+        res.end(fs.readFileSync(filePath))
+      })
+    }
+  }
 }
 
 function medicalPortalApiPlugin(): Plugin {
@@ -116,6 +176,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     medicalPortalApiPlugin(),
+    pdfjsStandardFontsPlugin(),
   ],
   server: {
     port: 3000,

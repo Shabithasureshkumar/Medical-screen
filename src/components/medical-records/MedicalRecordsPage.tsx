@@ -18,12 +18,15 @@ interface MedicalRecordsPageProps {
   onBackToDashboard: () => void;
   onNavigateToUpload?: () => void;
   externalRecords?: MedicalRecordItem[];
+  /** Opens the dedicated Report PDF viewer for a selected document. */
+  onViewRecord?: (record: MedicalRecordItem) => void;
 }
 
 export const MedicalRecordsPage: React.FC<MedicalRecordsPageProps> = ({
   onBackToDashboard,
   onNavigateToUpload,
-  externalRecords
+  externalRecords,
+  onViewRecord
 }) => {
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,7 +169,13 @@ export const MedicalRecordsPage: React.FC<MedicalRecordsPageProps> = ({
         {/* Section 3: Records Table / Cards */}
         <MedicalRecordsTable
           records={filteredRecords}
-          onViewRecord={(rec) => showToast(`Opening preview for ${rec.title}`)}
+          onViewRecord={(rec) => {
+            if (onViewRecord) {
+              onViewRecord(rec);
+              return;
+            }
+            showToast(`Opening preview for ${rec.title}`);
+          }}
           onDownloadRecord={(rec) => showToast(`Downloading ${rec.downloadFileName} (${rec.fileSize})`)}
         />
 

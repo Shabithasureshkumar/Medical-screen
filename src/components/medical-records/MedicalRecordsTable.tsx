@@ -76,9 +76,19 @@ export const MedicalRecordsTable: React.FC<MedicalRecordsTableProps> = ({
             </thead>
             <tbody className="divide-y divide-slate-100">
               {records.map((rec) => (
-                <tr 
+                <tr
                   key={rec.id}
-                  className="hover:bg-purple-50/30 transition-colors group"
+                  onClick={() => onViewRecord(rec)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onViewRecord(rec);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Open PDF preview for ${rec.title}`}
+                  className="hover:bg-purple-50/30 transition-colors group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
                 >
                   {/* Document Name + AI Health Explanation */}
                   <td className="py-4 px-6 align-middle">
@@ -132,7 +142,10 @@ export const MedicalRecordsTable: React.FC<MedicalRecordsTableProps> = ({
                     <div className="flex items-center justify-end gap-3">
                       <button
                         type="button"
-                        onClick={() => onViewRecord(rec)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewRecord(rec);
+                        }}
                         title={`View ${rec.title}`}
                         aria-label={`View ${rec.title}`}
                         className="p-1.5 rounded-lg text-[#7C3AED] hover:bg-purple-100 hover:text-[#5C24FF] transition-all cursor-pointer"
@@ -141,7 +154,10 @@ export const MedicalRecordsTable: React.FC<MedicalRecordsTableProps> = ({
                       </button>
                       <button
                         type="button"
-                        onClick={() => onDownloadRecord(rec)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDownloadRecord(rec);
+                        }}
                         title={`Download ${rec.title}`}
                         aria-label={`Download ${rec.title}`}
                         className="p-1.5 rounded-lg text-[#7C3AED] hover:bg-purple-100 hover:text-[#5C24FF] transition-all cursor-pointer"
@@ -164,7 +180,17 @@ export const MedicalRecordsTable: React.FC<MedicalRecordsTableProps> = ({
         {records.map((rec) => (
           <div
             key={rec.id}
-            className="bg-white rounded-[18px] border border-slate-200/90 p-4 shadow-xs flex flex-col gap-3"
+            onClick={() => onViewRecord(rec)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onViewRecord(rec);
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={`Open PDF preview for ${rec.title}`}
+            className="bg-white rounded-[18px] border border-slate-200/90 p-4 shadow-xs flex flex-col gap-3 cursor-pointer active:bg-purple-50/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
           >
             {/* Top Row: Icon + Type Badge */}
             <div className="flex items-center justify-between">
@@ -194,7 +220,10 @@ export const MedicalRecordsTable: React.FC<MedicalRecordsTableProps> = ({
               <div className="flex items-center gap-2.5">
                 <button
                   type="button"
-                  onClick={() => onViewRecord(rec)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewRecord(rec);
+                  }}
                   aria-label={`View ${rec.title}`}
                   className="p-1 text-[#7C3AED] hover:text-[#5C24FF] transition-colors cursor-pointer"
                 >
@@ -202,7 +231,10 @@ export const MedicalRecordsTable: React.FC<MedicalRecordsTableProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => onDownloadRecord(rec)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDownloadRecord(rec);
+                  }}
                   aria-label={`Download ${rec.title}`}
                   className="p-1 text-[#7C3AED] hover:text-[#5C24FF] transition-colors cursor-pointer"
                 >
